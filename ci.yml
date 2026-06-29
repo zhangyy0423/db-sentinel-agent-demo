@@ -1,0 +1,25 @@
+Global:
+    version: "2.0"
+    group_email: icode-rd@baidu.com
+Default:
+    profile:
+        - build
+Profiles:
+    - profile:
+      name: build
+      mode: AGENT
+      environment:
+          image: DECK_STD_CENTOS7
+          tools:
+              - nodejs: 22.latest
+      build:
+          command: sh scripts/build.sh --build-target=$BUILD_TARGET --cache-dir=build-cache/webpack
+      artifacts:
+          release: true
+      cache:
+          enable: true
+          paths:
+              - build-cache
+      check:
+          - enable: true
+            reuse: TASK
