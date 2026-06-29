@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">DB Sentinel Agent system overview</title>
+  <desc id="desc">A one-screen overview showing business users asking questions, the agent planning SQL safely, a readonly database execution layer, and auditable results.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="0.55" stop-color="#0f1f2e"/>
+      <stop offset="1" stop-color="#102a2a"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" x2="1">
+      <stop offset="0" stop-color="#14b8a6"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" x2="1">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#ef4444"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="14" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#7dd3fc"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <path d="M0 640 C190 560 330 680 520 605 C720 526 854 650 1028 574 C1130 530 1202 514 1280 548 L1280 720 L0 720 Z" fill="#0f766e" opacity="0.16"/>
+  <text x="64" y="72" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800">DB Sentinel Agent</text>
+  <text x="66" y="112" fill="#99f6e4" font-family="Inter, Arial, sans-serif" font-size="20">只读数据库分析值班 Agent：问数、查数、解释、留痕</text>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="185" width="250" height="235" rx="22" fill="#0f172a" stroke="#334155"/>
+    <text x="98" y="230" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">业务用户</text>
+    <text x="98" y="270" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="16">运营 / 产品 / 销售</text>
+    <rect x="98" y="308" width="194" height="54" rx="14" fill="#13263a" stroke="#2563eb"/>
+    <text x="118" y="342" fill="#bfdbfe" font-family="Inter, Arial, sans-serif" font-size="15">最近 7 天 GMV?</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="450" y="148" width="380" height="318" rx="26" fill="#0b2530" stroke="#14b8a6" stroke-width="2"/>
+    <text x="485" y="198" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">Agent 工作流</text>
+    <text x="486" y="228" fill="#99f6e4" font-family="Inter, Arial, sans-serif" font-size="15">Schema → Plan → SQL → Guard → Execute → Answer</text>
+    <g font-family="Inter, Arial, sans-serif" font-size="15" font-weight="700">
+      <rect x="486" y="262" width="138" height="44" rx="12" fill="#123a44" stroke="#2dd4bf"/>
+      <text x="511" y="291" fill="#ccfbf1">Schema</text>
+      <rect x="646" y="262" width="138" height="44" rx="12" fill="#123a44" stroke="#2dd4bf"/>
+      <text x="690" y="291" fill="#ccfbf1">Plan</text>
+      <rect x="486" y="326" width="138" height="44" rx="12" fill="#132a4a" stroke="#60a5fa"/>
+      <text x="531" y="355" fill="#dbeafe">SQL</text>
+      <rect x="646" y="326" width="138" height="44" rx="12" fill="#132a4a" stroke="#60a5fa"/>
+      <text x="687" y="355" fill="#dbeafe">Guard</text>
+      <rect x="486" y="390" width="138" height="44" rx="12" fill="#2f2613" stroke="#f59e0b"/>
+      <text x="519" y="419" fill="#fde68a">Execute</text>
+      <rect x="646" y="390" width="138" height="44" rx="12" fill="#2f2613" stroke="#f59e0b"/>
+      <text x="682" y="419" fill="#fde68a">Answer</text>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="956" y="178" width="250" height="110" rx="20" fill="#09251f" stroke="#34d399"/>
+    <text x="986" y="220" fill="#d1fae5" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">Readonly DB</text>
+    <text x="986" y="254" fill="#86efac" font-family="Inter, Arial, sans-serif" font-size="15">SQLite mode=ro</text>
+
+    <rect x="956" y="350" width="250" height="150" rx="20" fill="#111827" stroke="#60a5fa"/>
+    <text x="986" y="392" fill="#dbeafe" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">结果输出</text>
+    <text x="986" y="428" fill="#bfdbfe" font-family="Inter, Arial, sans-serif" font-size="15">表格 · 图表 · 解释</text>
+    <text x="986" y="462" fill="#bfdbfe" font-family="Inter, Arial, sans-serif" font-size="15">SQL · Guard · Audit</text>
+  </g>
+
+  <line x1="320" y1="300" x2="438" y2="300" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="830" y1="282" x2="944" y2="235" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="1080" y1="288" x2="1080" y2="340" stroke="#7dd3fc" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M956 444 C872 512 744 544 618 528 C478 510 344 468 254 420" fill="none" stroke="#5eead4" stroke-width="4" stroke-dasharray="10 10" marker-end="url(#arrow)"/>
+
+  <g transform="translate(84 545)">
+    <rect width="1090" height="92" rx="18" fill="#0f172a" stroke="#334155"/>
+    <text x="28" y="38" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="800">核心判断</text>
+    <text x="28" y="68" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="17">不是把自然语言直接变 SQL，而是把数据分析值班流程做成可审计、安全、可复核的闭环。</text>
+    <rect x="842" y="22" width="210" height="48" rx="14" fill="url(#teal)"/>
+    <text x="890" y="53" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">Agent 重塑工作流</text>
+  </g>
+</svg>

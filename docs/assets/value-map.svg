@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Value map</title>
+  <desc id="desc">A value map showing how DB Sentinel Agent serves business teams, data analysts, security governance, and engineering.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f1f5f9"/>
+      <stop offset="1" stop-color="#ecfeff"/>
+    </linearGradient>
+    <linearGradient id="center" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0f766e"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <text x="60" y="74" fill="#0f172a" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="850">价值地图</text>
+  <text x="62" y="112" fill="#475569" font-family="Inter, Arial, sans-serif" font-size="19">同一个 Agent 闭环同时服务业务效率、数据团队、治理安全和工程扩展。</text>
+
+  <g filter="url(#shadow)">
+    <circle cx="640" cy="364" r="116" fill="url(#center)"/>
+    <text x="548" y="348" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="27" font-weight="900">DB Sentinel</text>
+    <text x="586" y="385" fill="#dbeafe" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">只读分析值班</text>
+  </g>
+
+  <g font-family="Inter, Arial, sans-serif" filter="url(#shadow)">
+    <rect x="92" y="180" width="320" height="160" rx="24" fill="#ffffff" stroke="#99f6e4"/>
+    <text x="126" y="228" fill="#0f766e" font-size="24" font-weight="900">业务团队</text>
+    <text x="126" y="266" fill="#475569" font-size="16">自助问数</text>
+    <text x="126" y="296" fill="#475569" font-size="16">快速复盘渠道和活动</text>
+    <text x="126" y="326" fill="#475569" font-size="16">获得下一步拆解建议</text>
+
+    <rect x="868" y="180" width="320" height="160" rx="24" fill="#ffffff" stroke="#bfdbfe"/>
+    <text x="902" y="228" fill="#2563eb" font-size="24" font-weight="900">数据分析师</text>
+    <text x="902" y="266" fill="#475569" font-size="16">减少临时 SQL 打断</text>
+    <text x="902" y="296" fill="#475569" font-size="16">复核 Agent 生成口径</text>
+    <text x="902" y="326" fill="#475569" font-size="16">沉淀常见分析模板</text>
+
+    <rect x="92" y="430" width="320" height="160" rx="24" fill="#ffffff" stroke="#fecaca"/>
+    <text x="126" y="478" fill="#dc2626" font-size="24" font-weight="900">治理安全</text>
+    <text x="126" y="516" fill="#475569" font-size="16">只读权限边界</text>
+    <text x="126" y="546" fill="#475569" font-size="16">危险 SQL 拦截</text>
+    <text x="126" y="576" fill="#475569" font-size="16">全链路审计留痕</text>
+
+    <rect x="868" y="430" width="320" height="160" rx="24" fill="#ffffff" stroke="#fed7aa"/>
+    <text x="902" y="478" fill="#ea580c" font-size="24" font-weight="900">工程扩展</text>
+    <text x="902" y="516" fill="#475569" font-size="16">可换真实数据库连接器</text>
+    <text x="902" y="546" fill="#475569" font-size="16">可接指标语义层</text>
+    <text x="902" y="576" fill="#475569" font-size="16">可接企业权限系统</text>
+  </g>
+
+  <g stroke="#64748b" stroke-width="3" stroke-dasharray="8 8">
+    <line x1="412" y1="260" x2="535" y2="324"/>
+    <line x1="868" y1="260" x2="745" y2="324"/>
+    <line x1="412" y1="510" x2="535" y2="404"/>
+    <line x1="868" y1="510" x2="745" y2="404"/>
+  </g>
+
+  <rect x="310" y="626" width="660" height="50" rx="16" fill="#0f172a"/>
+  <text x="356" y="658" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="850">价值主张：把“临时问数”升级成可治理的数据工作流。</text>
+</svg>

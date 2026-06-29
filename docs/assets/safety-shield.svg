@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Readonly safety shield</title>
+  <desc id="desc">Three layers of protection for readonly database querying: SQL AST guard, dangerous request blocking, and SQLite readonly execution.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#101827"/>
+      <stop offset="1" stop-color="#172554"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="0.55" stop-color="#14b8a6"/>
+      <stop offset="1" stop-color="#16a34a"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#fda4af"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <text x="64" y="74" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="850">只读安全防线</text>
+  <text x="66" y="112" fill="#bfdbfe" font-family="Inter, Arial, sans-serif" font-size="19">危险请求不会直接碰数据库；每一层都有明确拦截理由。</text>
+
+  <g transform="translate(455 148)" filter="url(#shadow)">
+    <path d="M185 0 L340 54 L314 260 C294 414 185 500 185 500 C185 500 76 414 56 260 L30 54 Z" fill="url(#shield)" opacity="0.95"/>
+    <path d="M185 38 L300 78 L280 248 C264 365 185 438 185 438 C185 438 106 365 90 248 L70 78 Z" fill="#0f172a" opacity="0.82"/>
+    <text x="113" y="178" fill="#ccfbf1" font-family="Inter, Arial, sans-serif" font-size="31" font-weight="900">READ</text>
+    <text x="122" y="220" fill="#ccfbf1" font-family="Inter, Arial, sans-serif" font-size="31" font-weight="900">ONLY</text>
+    <text x="108" y="286" fill="#99f6e4" font-family="Inter, Arial, sans-serif" font-size="16">SELECT / WITH</text>
+    <text x="104" y="316" fill="#99f6e4" font-family="Inter, Arial, sans-serif" font-size="16">mode=ro</text>
+    <text x="92" y="346" fill="#99f6e4" font-family="Inter, Arial, sans-serif" font-size="16">query_only=ON</text>
+  </g>
+
+  <g font-family="Inter, Arial, sans-serif" filter="url(#shadow)">
+    <rect x="74" y="182" width="295" height="118" rx="20" fill="#111827" stroke="#fda4af"/>
+    <text x="104" y="228" fill="#fecaca" font-size="22" font-weight="850">危险请求</text>
+    <text x="104" y="262" fill="#fca5a5" font-size="16">drop / update / delete</text>
+
+    <rect x="74" y="374" width="295" height="154" rx="20" fill="#111827" stroke="#60a5fa"/>
+    <text x="104" y="420" fill="#dbeafe" font-size="22" font-weight="850">拦截策略</text>
+    <text x="104" y="454" fill="#bfdbfe" font-size="16">1. 多语句拒绝</text>
+    <text x="104" y="484" fill="#bfdbfe" font-size="16">2. 写操作 AST 拒绝</text>
+    <text x="104" y="514" fill="#bfdbfe" font-size="16">3. 危险函数拒绝</text>
+
+    <rect x="910" y="182" width="295" height="118" rx="20" fill="#111827" stroke="#86efac"/>
+    <text x="940" y="228" fill="#dcfce7" font-size="22" font-weight="850">安全查询</text>
+    <text x="940" y="262" fill="#bbf7d0" font-size="16">SELECT / WITH only</text>
+
+    <rect x="910" y="374" width="295" height="154" rx="20" fill="#111827" stroke="#fcd34d"/>
+    <text x="940" y="420" fill="#fef3c7" font-size="22" font-weight="850">可审计输出</text>
+    <text x="940" y="454" fill="#fde68a" font-size="16">SQL</text>
+    <text x="940" y="484" fill="#fde68a" font-size="16">Guard reason</text>
+    <text x="940" y="514" fill="#fde68a" font-size="16">Execution log</text>
+  </g>
+
+  <line x1="370" y1="242" x2="470" y2="242" stroke="#fda4af" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="370" y1="450" x2="470" y2="450" stroke="#93c5fd" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="810" y1="242" x2="902" y2="242" stroke="#86efac" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="810" y1="450" x2="902" y2="450" stroke="#fcd34d" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <rect x="244" y="604" width="792" height="58" rx="16" fill="#0f172a" stroke="#334155"/>
+  <text x="282" y="640" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800">演示重点：输入危险请求时，结果区必须显示“只读安全拦截”，且数据库不执行。</text>
+</svg>

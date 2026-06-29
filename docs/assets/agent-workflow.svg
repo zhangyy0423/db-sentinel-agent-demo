@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="620" viewBox="0 0 1280 620" role="img" aria-labelledby="title desc">
+  <title id="title">Six-step agent workflow</title>
+  <desc id="desc">The six audited stages of DB Sentinel Agent from schema retrieval to final answer.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#0f766e"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="620" rx="28" fill="url(#bg)"/>
+  <text x="60" y="72" fill="#0f172a" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="850">一次问数 = 六步可审计流水线</text>
+  <text x="62" y="112" fill="#475569" font-family="Inter, Arial, sans-serif" font-size="18">每个阶段都有状态、输入、输出和审计记录，方便现场解释，也方便生产落地复核。</text>
+
+  <g font-family="Inter, Arial, sans-serif">
+    <g filter="url(#shadow)" transform="translate(70 198)">
+      <rect width="160" height="210" rx="22" fill="#ffffff" stroke="#99f6e4"/>
+      <circle cx="80" cy="54" r="28" fill="#ccfbf1"/>
+      <text x="70" y="64" fill="#0f766e" font-size="28" font-weight="900">1</text>
+      <text x="28" y="112" fill="#0f172a" font-size="18" font-weight="850">Schema</text>
+      <text x="28" y="142" fill="#475569" font-size="14">表结构</text>
+      <text x="28" y="164" fill="#475569" font-size="14">字段说明</text>
+      <text x="28" y="186" fill="#475569" font-size="14">样例值</text>
+    </g>
+
+    <g filter="url(#shadow)" transform="translate(270 198)">
+      <rect width="160" height="210" rx="22" fill="#ffffff" stroke="#bfdbfe"/>
+      <circle cx="80" cy="54" r="28" fill="#dbeafe"/>
+      <text x="70" y="64" fill="#2563eb" font-size="28" font-weight="900">2</text>
+      <text x="46" y="112" fill="#0f172a" font-size="18" font-weight="850">Plan</text>
+      <text x="28" y="142" fill="#475569" font-size="14">指标</text>
+      <text x="28" y="164" fill="#475569" font-size="14">口径</text>
+      <text x="28" y="186" fill="#475569" font-size="14">时间窗</text>
+    </g>
+
+    <g filter="url(#shadow)" transform="translate(470 198)">
+      <rect width="160" height="210" rx="22" fill="#ffffff" stroke="#fed7aa"/>
+      <circle cx="80" cy="54" r="28" fill="#ffedd5"/>
+      <text x="70" y="64" fill="#ea580c" font-size="28" font-weight="900">3</text>
+      <text x="55" y="112" fill="#0f172a" font-size="18" font-weight="850">SQL</text>
+      <text x="28" y="142" fill="#475569" font-size="14">只读查询</text>
+      <text x="28" y="164" fill="#475569" font-size="14">fallback</text>
+      <text x="28" y="186" fill="#475569" font-size="14">可复核</text>
+    </g>
+
+    <g filter="url(#shadow)" transform="translate(670 198)">
+      <rect width="160" height="210" rx="22" fill="#ffffff" stroke="#fecaca"/>
+      <circle cx="80" cy="54" r="28" fill="#fee2e2"/>
+      <text x="70" y="64" fill="#dc2626" font-size="28" font-weight="900">4</text>
+      <text x="45" y="112" fill="#0f172a" font-size="18" font-weight="850">Guard</text>
+      <text x="28" y="142" fill="#475569" font-size="14">AST 解析</text>
+      <text x="28" y="164" fill="#475569" font-size="14">拒绝写库</text>
+      <text x="28" y="186" fill="#475569" font-size="14">拒绝多语句</text>
+    </g>
+
+    <g filter="url(#shadow)" transform="translate(870 198)">
+      <rect width="160" height="210" rx="22" fill="#ffffff" stroke="#bbf7d0"/>
+      <circle cx="80" cy="54" r="28" fill="#dcfce7"/>
+      <text x="70" y="64" fill="#16a34a" font-size="28" font-weight="900">5</text>
+      <text x="34" y="112" fill="#0f172a" font-size="18" font-weight="850">Execute</text>
+      <text x="28" y="142" fill="#475569" font-size="14">mode=ro</text>
+      <text x="28" y="164" fill="#475569" font-size="14">表格</text>
+      <text x="28" y="186" fill="#475569" font-size="14">图表</text>
+    </g>
+
+    <g filter="url(#shadow)" transform="translate(1070 198)">
+      <rect width="160" height="210" rx="22" fill="#ffffff" stroke="#ddd6fe"/>
+      <circle cx="80" cy="54" r="28" fill="#ede9fe"/>
+      <text x="70" y="64" fill="#7c3aed" font-size="28" font-weight="900">6</text>
+      <text x="34" y="112" fill="#0f172a" font-size="18" font-weight="850">Answer</text>
+      <text x="28" y="142" fill="#475569" font-size="14">业务解释</text>
+      <text x="28" y="164" fill="#475569" font-size="14">限制说明</text>
+      <text x="28" y="186" fill="#475569" font-size="14">下一步</text>
+    </g>
+  </g>
+
+  <g stroke="#0f766e" stroke-width="4" marker-end="url(#arrow)">
+    <line x1="232" y1="304" x2="258" y2="304"/>
+    <line x1="432" y1="304" x2="458" y2="304"/>
+    <line x1="632" y1="304" x2="658" y2="304"/>
+    <line x1="832" y1="304" x2="858" y2="304"/>
+    <line x1="1032" y1="304" x2="1058" y2="304"/>
+  </g>
+
+  <rect x="230" y="488" width="820" height="64" rx="18" fill="#0f172a"/>
+  <text x="270" y="528" fill="#e2e8f0" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="800">审计记录贯穿全链路：plan · sql_generate · guard · execution · answer</text>
+</svg>
