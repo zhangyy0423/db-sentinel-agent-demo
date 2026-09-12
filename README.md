@@ -28,7 +28,7 @@ Agent 每次回答都会保留 6 步审计轨迹：
 
 1. `schema_retrieve`：读取表结构、字段说明和样例值。
 2. `intent_plan`：拆解指标、过滤条件和时间范围。
-3. `sql_generate`：生成候选 SQL，无 LLM key 时使用规则 fallback。
+3. `sql_generate`：命中内置数据分析问题时生成候选 SQL，无 LLM key 时使用规则 fallback。
 4. `sql_guard`：用 `sqlglot` 解析 SQL，只允许单条 `SELECT` / `WITH`。
 5. `execute_and_visualize`：只读执行 SQL，返回表格和图表建议。
 6. `reflect_and_answer`：输出业务解释、异常洞察和下一步建议。
@@ -84,13 +84,15 @@ config/app.conf
 
 ## LLM 配置
 
-Demo 默认不依赖 LLM，未配置 key 时也能回答内置样例问题。需要接入 OpenAI-compatible 模型时，复制 `.env.example` 为 `.env` 并填写：
+Demo 默认不依赖 LLM，未配置 key 时也能回答内置样例问题；无法识别或超出 Demo 范围的问题会返回边界说明，不会套用默认 GMV 模版。需要接入 OpenAI-compatible 模型时，复制 `.env.example` 为 `.env` 并填写：
 
 ```bash
 OPENAI_API_KEY=...
 OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=...
 ```
+
+配置模型后，LLM 会参与非数据分析问题的边界回复和后续可替换生成层；命中内置业务分析问题时，SQL 仍需经过只读 `sql_guard` 后才会执行。
 
 ## API
 

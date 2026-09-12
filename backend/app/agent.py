@@ -67,6 +67,77 @@ def run_agent(question: str) -> dict[str, Any]:
     )
     record("plan", plan)
 
+    if _is_intro_question(question):
+        answer = (
+            "我是 DB Sentinel Agent，一个只读、安全、可审计的数据分析 Agent Demo。"
+            "我可以基于内置 SQLite 示例库回答 GMV、渠道转化率、ROI、退款率和新用户首单转化等问题；"
+            "不会执行写库、删表或修改数据的操作。"
+        )
+        steps.append(
+            _step(
+                "reflect_and_answer",
+                "completed",
+                "这是身份/能力范围问题，无需执行 SQL。",
+                {"answer": answer},
+            )
+        )
+        record("answer", {"answer": answer, "sql_executed": False})
+        return {
+            "session_id": session_id,
+            "question": question,
+            "steps": steps,
+            "sql": "无需执行 SQL",
+            "guard": {
+                "allowed": True,
+                "reason": "身份/能力范围问题，无需执行 SQL。",
+                "normalized_sql": None,
+            },
+            "columns": [],
+            "rows": [],
+            "chart": None,
+            "answer": answer,
+            "suggestions": SAMPLE_QUESTIONS[:3],
+            "blocked": False,
+            "generated_by": "fallback",
+            "sql_source": "not_applicable",
+            "row_count": 0,
+        }
+
+    if not _looks_dangerous(question) and not _is_supported_analysis_question(question):
+        llm_answer = _ask_llm_boundary_answer(question)
+        answer = llm_answer or _unsupported_answer()
+        source = "llm_boundary" if llm_answer else "not_applicable"
+        generated_by = "llm" if llm_answer else "fallback"
+        steps.append(
+            _step(
+                "reflect_and_answer",
+                "completed",
+                "当前问题不属于内置业务数据分析范围，无需执行 SQL。",
+                {"answer": answer, "llm_available": bool(llm_answer)},
+            )
+        )
+        record("answer", {"answer": answer, "sql_executed": False, "llm_available": bool(llm_answer)})
+        return {
+            "session_id": session_id,
+            "question": question,
+            "steps": steps,
+            "sql": "无需执行 SQL",
+            "guard": {
+                "allowed": True,
+                "reason": "非业务数据分析问题，无需执行 SQL。",
+                "normalized_sql": None,
+            },
+            "columns": [],
+            "rows": [],
+            "chart": None,
+            "answer": answer,
+            "suggestions": SAMPLE_QUESTIONS[:3],
+            "blocked": False,
+            "generated_by": generated_by,
+            "sql_source": source,
+            "row_count": 0,
+        }
+
     llm_hint = ask_openai_compatible(
         f"用户问题：{question}\n请生成只读 SQL 查询计划。若不确定，返回需要澄清的问题。"
     )
@@ -176,29 +247,59 @@ def _plan_intent(question: str) -> dict[str, Any]:
             "metrics": ["sql_safety"],
             "time_range": "not_applicable",
         }
-    if "roi" in normalized or "618" in question:
+    if _is_intro_question(question):
+        return {
+            "summary": "识别为身份/能力范围问题，返回 Agent 能力说明和可尝试问题。",
+            "metrics": ["agent_scope"],
+            "time_range": "not_applicable",
+        }
+    if _is_roi_question(question):
         return {
             "summary": "按活动预算和活动期支付 GMV 计算渠道 ROI。",
             "metrics": ["campaign_revenue", "budget", "roi"],
             "time_range": "2026-06-10 至 2026-06-18",
         }
-    if "转化" in question or "下降" in question:
+    if _is_conversion_question(question):
         return {
             "summary": "对比最近 7 天与前 7 天的渠道访问到下单转化率，寻找下降最大的渠道。",
             "metrics": ["visits", "orders", "conversion_rate", "delta"],
             "time_range": f"{PREV_START} 至 {LAST_END}",
         }
-    if "退款" in question:
+    if _is_refund_question(question):
         return {
             "summary": "按商品类别对比最近一周与前一周退款率，定位异常升高类别。",
             "metrics": ["refund_rate", "refund_delta"],
             "time_range": f"{PREV_START} 至 {LAST_END}",
         }
-    if "城市" in question or "首单" in question or "新用户" in question:
+    if _is_city_question(question):
         return {
             "summary": "按城市统计新注册用户在 7 天内完成首单的比例。",
             "metrics": ["new_users", "converted_users", "first_order_conversion"],
             "time_range": "注册日期 2026-06-01 之后",
+        }
+    if _is_gmv_reason_question(question):
+        return {
+            "summary": "围绕 GMV 领先渠道拆解订单量、客单价和退款影响，解释领先原因。",
+            "metrics": ["paid_orders", "avg_order_value", "refund_orders", "gmv"],
+            "time_range": f"{LAST_START} 至 {LAST_END}",
+        }
+    if _is_segment_question(question):
+        return {
+            "summary": "按渠道和商品类别细分最近 7 天 paid GMV，定位主要贡献结构。",
+            "metrics": ["channel", "product_category", "paid_orders", "gmv"],
+            "time_range": f"{LAST_START} 至 {LAST_END}",
+        }
+    if _is_sql_export_question(question):
+        return {
+            "summary": "生成可复核的只读 SQL，并返回关键字段说明，方便数据同学二次校验。",
+            "metrics": ["gmv", "paid_orders", "sql_review"],
+            "time_range": f"{LAST_START} 至 {LAST_END}",
+        }
+    if not _is_default_gmv_question(question):
+        return {
+            "summary": "当前问题不属于内置业务数据分析范围，返回边界说明而不是套用默认 GMV 模版。",
+            "metrics": ["out_of_scope"],
+            "time_range": "not_applicable",
         }
     return {
         "summary": "默认拆解为最近 7 天渠道 GMV 排名问题。",
@@ -212,7 +313,7 @@ def _fallback_sql(question: str) -> tuple[str, dict[str, Any] | None]:
         return "DROP TABLE orders;", None
 
     normalized = question.lower()
-    if "roi" in normalized or "618" in question:
+    if _is_roi_question(question):
         return (
             """
             SELECT
@@ -233,7 +334,7 @@ def _fallback_sql(question: str) -> tuple[str, dict[str, Any] | None]:
             {"type": "bar", "title": "618 活动渠道 ROI", "xKey": "channel", "yKeys": ["roi"]},
         )
 
-    if "转化" in question or "下降" in question:
+    if _is_conversion_question(question):
         return (
             f"""
             WITH channel_windows AS (
@@ -277,7 +378,7 @@ def _fallback_sql(question: str) -> tuple[str, dict[str, Any] | None]:
             },
         )
 
-    if "退款" in question:
+    if _is_refund_question(question):
         return (
             f"""
             WITH category_orders AS (
@@ -313,7 +414,7 @@ def _fallback_sql(question: str) -> tuple[str, dict[str, Any] | None]:
             },
         )
 
-    if "城市" in question or "首单" in question or "新用户" in question:
+    if _is_city_question(question):
         return (
             """
             WITH first_paid_order AS (
@@ -351,6 +452,75 @@ def _fallback_sql(question: str) -> tuple[str, dict[str, Any] | None]:
             },
         )
 
+    if _is_gmv_reason_question(question):
+        return (
+            f"""
+            SELECT
+                c.name AS channel,
+                COUNT(CASE WHEN o.status = 'paid' THEN 1 END) AS paid_orders,
+                ROUND(SUM(CASE WHEN o.status = 'paid' THEN o.amount ELSE 0 END), 2) AS gmv,
+                ROUND(AVG(CASE WHEN o.status = 'paid' THEN o.amount END), 2) AS avg_order_value,
+                COUNT(CASE WHEN o.status = 'refunded' THEN 1 END) AS refund_orders
+            FROM orders o
+            JOIN channels c ON c.id = o.channel_id
+            WHERE date(o.order_time) BETWEEN '{LAST_START}' AND '{LAST_END}'
+            GROUP BY c.id, c.name
+            ORDER BY gmv DESC
+            LIMIT 5
+            """,
+            {
+                "type": "bar",
+                "title": "渠道 GMV 领先原因拆解",
+                "xKey": "channel",
+                "yKeys": ["gmv", "avg_order_value"],
+            },
+        )
+
+    if _is_segment_question(question):
+        return (
+            f"""
+            SELECT
+                c.name AS channel,
+                p.category AS product_category,
+                COUNT(*) AS paid_orders,
+                ROUND(SUM(o.amount), 2) AS gmv
+            FROM orders o
+            JOIN channels c ON c.id = o.channel_id
+            JOIN products p ON p.id = o.product_id
+            WHERE o.status = 'paid'
+                AND date(o.order_time) BETWEEN '{LAST_START}' AND '{LAST_END}'
+            GROUP BY c.id, c.name, p.category
+            ORDER BY gmv DESC
+            LIMIT 10
+            """,
+            {
+                "type": "bar",
+                "title": "渠道 x 商品类别 GMV 细分",
+                "xKey": "product_category",
+                "yKeys": ["gmv"],
+            },
+        )
+
+    if _is_sql_export_question(question):
+        return (
+            f"""
+            SELECT
+                c.name AS channel,
+                COUNT(*) AS paid_orders,
+                ROUND(SUM(o.amount), 2) AS gmv,
+                MIN(date(o.order_time)) AS start_date,
+                MAX(date(o.order_time)) AS end_date
+            FROM orders o
+            JOIN channels c ON c.id = o.channel_id
+            WHERE o.status = 'paid'
+                AND date(o.order_time) BETWEEN '{LAST_START}' AND '{LAST_END}'
+            GROUP BY c.id, c.name
+            ORDER BY gmv DESC
+            LIMIT 5
+            """,
+            {"type": "bar", "title": "SQL 复核口径：渠道 GMV", "xKey": "channel", "yKeys": ["gmv"]},
+        )
+
     return (
         f"""
         SELECT
@@ -374,27 +544,45 @@ def _answer(question: str, rows: list[dict[str, Any]]) -> str:
         return "查询没有返回结果。建议扩大时间范围，或检查相关渠道、商品类别是否有数据。"
 
     top = rows[0]
-    if "roi" in question.lower() or "618" in question:
+    if _is_roi_question(question):
         return (
             f"618 活动期间 ROI 最高的是 {top['channel']}，ROI 约为 {top['roi']}。"
             "口径为活动期内 paid 订单 GMV / 活动预算；该口径未扣除履约成本，适合做渠道初筛。"
         )
-    if "转化" in question or "下降" in question:
+    if _is_conversion_question(question):
         return (
             f"转化率下降最多的是 {top['channel']}，变化 {top['delta_percentage_points']} 个百分点。"
             f"它最近 7 天访问量为 {top['last_visits']}，但成交订单只有 {top['last_orders']}；"
             "可能原因是流量质量下降、投放人群偏移或落地页/库存问题。建议继续按素材、城市和商品类别拆分。"
         )
-    if "退款" in question:
+    if _is_refund_question(question):
         return (
             f"退款率异常升高最明显的是 {top['product_category']}，"
             f"最近一周退款率 {top['last_refund_rate']}%，较前一周变化 {top['delta_percentage_points']} 个百分点。"
             "建议核查该品类近期批次质量、页面承诺和售后原因。"
         )
-    if "城市" in question or "首单" in question or "新用户" in question:
+    if _is_city_question(question):
         return (
             f"新用户首单转化率最高的城市是 {top['city']}，转化率 {top['first_order_conversion_rate']}%。"
             "不同城市差异可能来自渠道结构、物流承诺和本地活动触达，建议进一步拆到渠道维度。"
+        )
+    if _is_gmv_reason_question(question):
+        return (
+            f"{top['channel']} 的 GMV 领先主要来自 paid 订单数 {top['paid_orders']}、"
+            f"平均客单价 {top['avg_order_value']}，最近 7 天 paid GMV 为 {top['gmv']}。"
+            f"同期退款订单数为 {top['refund_orders']}，建议继续核查该渠道的人群质量、活动素材和高客单商品占比。"
+        )
+    if _is_segment_question(question):
+        return (
+            f"最近 7 天贡献最高的细分组合是 {top['channel']} / {top['product_category']}，"
+            f"GMV 为 {top['gmv']}，paid 订单数 {top['paid_orders']}。"
+            "这说明渠道表现不能只看总量，还应拆到商品类别评估结构性贡献。"
+        )
+    if _is_sql_export_question(question):
+        return (
+            f"已生成可复核 SQL：口径为 {top['start_date']} 至 {top['end_date']} 的 paid 订单 GMV，"
+            f"当前最高渠道为 {top['channel']}，GMV {top['gmv']}，paid 订单数 {top['paid_orders']}。"
+            "页面中的 SQL 可直接复制给数据同学复核。"
         )
     return (
         f"最近 7 天 GMV 最高的渠道是 {top['channel']}，GMV 为 {top['gmv']}，"
@@ -403,11 +591,105 @@ def _answer(question: str, rows: list[dict[str, Any]]) -> str:
 
 
 def _suggestions(question: str) -> list[str]:
-    if "转化" in question or "下降" in question:
+    if _is_conversion_question(question):
         return ["继续按城市拆分下降渠道", "查看下降渠道的商品类别结构", "对比活动前后退款率"]
-    if "退款" in question:
+    if _is_refund_question(question):
         return ["按渠道查看该品类退款率", "查看退款订单金额分布", "对比该品类 GMV 与退款率"]
+    if _is_gmv_reason_question(question):
+        return ["按商品类别细分 Douyin Ads 的 GMV", "对比 Douyin Ads 与 Xiaohongshu 的客单价", "导出当前分析 SQL"]
+    if _is_segment_question(question):
+        return ["继续看退款率异常品类", "按城市拆分新用户首单转化", "导出当前分析 SQL"]
+    if _is_sql_export_question(question):
+        return ["查看 SQL guard 审计记录", "按商品类别细分结果", "继续追问原因拆解"]
     return ["继续追问原因拆解", "按城市或商品类别细分", "导出 SQL 给数据同学复核"]
+
+
+def _ask_llm_boundary_answer(question: str) -> str | None:
+    answer = ask_openai_compatible(
+        (
+            "用户输入不属于当前内置 SQLite 业务数据分析问题。\n"
+            f"用户输入：{question}\n"
+            "请用中文简短回复：说明你是 DB Sentinel Agent，当前只能回答内置 Demo 数据中的 GMV、"
+            "渠道转化率、ROI、退款率、新用户首单转化和 SQL 复核问题；不要编造业务数据结论。"
+        ),
+        system_prompt=(
+            "你是 DB Sentinel Agent 的边界回复模块。只输出自然语言短句，不输出 JSON，"
+            "不生成 SQL，不提供与内置 Demo 无关的建议。"
+        ),
+        temperature=0.2,
+    )
+    if not answer:
+        return None
+    return answer.strip()[:500]
+
+
+def _unsupported_answer() -> str:
+    return (
+        "这个问题不在当前 DB Sentinel Agent Demo 的数据分析范围内。"
+        "我可以回答内置 SQLite 示例库中的 GMV、渠道转化率、ROI、退款率、"
+        "新用户首单转化和 SQL 复核问题；不会为了无关问题套用默认 GMV 模版。"
+    )
+
+
+def _is_supported_analysis_question(question: str) -> bool:
+    return (
+        _is_roi_question(question)
+        or _is_conversion_question(question)
+        or _is_refund_question(question)
+        or _is_city_question(question)
+        or _is_gmv_reason_question(question)
+        or _is_segment_question(question)
+        or _is_sql_export_question(question)
+        or _is_default_gmv_question(question)
+    )
+
+
+def _is_intro_question(question: str) -> bool:
+    normalized = question.strip().lower()
+    intro_phrases = {"你好", "您好", "hi", "hello", "你是谁", "你是啥", "介绍一下", "你能做什么"}
+    return normalized in intro_phrases or any(phrase in question for phrase in ["你是谁", "你能做什么", "介绍一下"])
+
+
+def _is_roi_question(question: str) -> bool:
+    return "roi" in question.lower() or "618" in question
+
+
+def _is_conversion_question(question: str) -> bool:
+    return "转化" in question or "下降" in question
+
+
+def _is_refund_question(question: str) -> bool:
+    return "退款" in question
+
+
+def _is_city_question(question: str) -> bool:
+    if _is_segment_question(question):
+        return False
+    return "城市" in question or "首单" in question or "新用户" in question
+
+
+def _is_segment_question(question: str) -> bool:
+    return "细分" in question or "商品类别" in question or "品类" in question
+
+
+def _is_sql_export_question(question: str) -> bool:
+    return "导出" in question or "复核" in question or "sql" in question.lower()
+
+
+def _is_gmv_reason_question(question: str) -> bool:
+    normalized = question.lower()
+    if _is_conversion_question(question) or _is_refund_question(question) or _is_roi_question(question):
+        return False
+    return "原因" in question or "拆解" in question or "why" in normalized
+
+
+def _is_default_gmv_question(question: str) -> bool:
+    normalized = question.lower()
+    gmv_terms = ("gmv", "销售额", "成交额", "交易额", "订单金额")
+    rank_terms = ("最高", "最多", "排名", "排行", "top", "领先")
+    return ("渠道" in question and any(term in normalized for term in gmv_terms)) or (
+        any(term in normalized for term in gmv_terms) and any(term in question.lower() for term in rank_terms)
+    )
 
 
 def _looks_dangerous(question: str) -> bool:

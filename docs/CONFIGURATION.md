@@ -160,7 +160,7 @@ ENABLE_DEMO_RESET=true .venv/bin/uvicorn app.main:app --app-dir backend --host 1
 
 ## LLM 配置
 
-Demo 默认不依赖 LLM key。没有模型时，内置确定性 fallback 会稳定回答 5 个样例问题。
+Demo 默认不依赖 LLM key。没有模型时，内置确定性 fallback 会稳定回答样例业务分析问题；无法识别或超出 Demo 范围的问题会返回边界说明，不会套用默认 GMV 模版。
 
 需要接 OpenAI-compatible 模型时，在 `.env` 里配置：
 
@@ -176,10 +176,10 @@ OPENAI_MODEL=...
 APP_PUBLIC_URL=https://<sandbox-domain>/
 ```
 
-当前 Demo 的 SQL 仍使用确定性 fallback，模型调用只作为生成计划提示的可替换层。参赛时建议诚实表述为：
+配置模型后，LLM 会参与非数据分析问题的边界回复和后续可替换生成层；命中内置业务分析问题时，SQL 仍使用确定性 fallback 并经过只读 `sql_guard` 才会执行。参赛时建议诚实表述为：
 
 ```text
-当前版本证明 safe auditable workflow，fallback 保证现场稳定；LLM 是可替换生成层。
+当前版本证明 safe auditable workflow，fallback 保证现场稳定；LLM 参与边界理解和可替换生成层，所有 SQL 执行仍受只读 guard 约束。
 ```
 
 ## 运行时自检接口

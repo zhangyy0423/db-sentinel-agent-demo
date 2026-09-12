@@ -221,7 +221,12 @@ function App() {
                     {entry.content}
                   </div>
                 ) : (
-                  <AgentMessage response={entry.content} key={`${entry.role}-${index}`} />
+                  <AgentMessage
+                    response={entry.content}
+                    onRunSuggestion={runQuestion}
+                    disabled={loading}
+                    key={`${entry.role}-${index}`}
+                  />
                 )
               )
             )}
@@ -287,7 +292,15 @@ function PanelTitle({ icon, title }: { icon: ReactNode; title: string }) {
   );
 }
 
-function AgentMessage({ response }: { response: ChatResponse }) {
+function AgentMessage({
+  response,
+  onRunSuggestion,
+  disabled
+}: {
+  response: ChatResponse;
+  onRunSuggestion: (question: string) => void;
+  disabled: boolean;
+}) {
   return (
     <article className={`message agent-message ${response.blocked ? "blocked" : ""}`}>
       <div className="answer-text">{response.answer}</div>
@@ -300,7 +313,15 @@ function AgentMessage({ response }: { response: ChatResponse }) {
       {response.suggestions.length ? (
         <div className="suggestions">
           {response.suggestions.map((suggestion) => (
-            <span key={suggestion}>{suggestion}</span>
+            <button
+              type="button"
+              key={suggestion}
+              disabled={disabled}
+              onClick={() => onRunSuggestion(suggestion)}
+              title="继续追问"
+            >
+              {suggestion}
+            </button>
           ))}
         </div>
       ) : null}

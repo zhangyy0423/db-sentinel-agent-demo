@@ -215,8 +215,9 @@ button {
 }
 
 .column-list span,
-.suggestions span {
+.suggestions button {
   padding: 4px 7px;
+  border: 0;
   border-radius: 7px;
   background: #eef2ff;
   color: #334155;
@@ -411,6 +412,11 @@ button {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 10px;
+}
+
+.suggestions button:hover:not(:disabled) {
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 .error-banner {

@@ -8,7 +8,12 @@ import urllib.request
 from .config import OPENAI_BASE_URL, OPENAI_MODEL
 
 
-def ask_openai_compatible(prompt: str) -> str | None:
+def ask_openai_compatible(
+    prompt: str,
+    *,
+    system_prompt: str = "你是只读数据库分析值班 Agent，只返回简洁、可审计的 JSON。",
+    temperature: float = 0.1,
+) -> str | None:
     """Best-effort OpenAI-compatible call. Demo stays usable without a key."""
     api_key = os.getenv("OPENAI_API_KEY")
     model = OPENAI_MODEL
@@ -21,11 +26,11 @@ def ask_openai_compatible(prompt: str) -> str | None:
         "messages": [
             {
                 "role": "system",
-                "content": "你是只读数据库分析值班 Agent，只返回简洁、可审计的 JSON。",
+                "content": system_prompt,
             },
             {"role": "user", "content": prompt},
         ],
-        "temperature": 0.1,
+        "temperature": temperature,
     }
     request = urllib.request.Request(
         f"{base_url}/chat/completions",
